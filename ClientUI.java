@@ -1,21 +1,70 @@
-package client;
+package server;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.border.EmptyBorder;
+import javax.swing.JTextArea;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
+
+import java.awt.FlowLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JButton;
+import javax.swing.GroupLayout;
+import javax.swing.GroupLayout.Alignment;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.CardLayout;
+import java.awt.Font;
+import javax.swing.UIManager;
+import javax.swing.SwingConstants;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
+import java.awt.Window.Type;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+
+//import com.jgoodies.forms.layout.FormLayout;
+//import com.jgoodies.forms.layout.ColumnSpec;
+//import com.jgoodies.forms.layout.RowSpec;
+//import net.miginfocom.swing.MigLayout;
+import javax.swing.JToggleButton;
+import javax.swing.ListModel;
+
+import java.awt.GridLayout;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.border.CompoundBorder;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.LineBorder;
+import java.awt.Color;
+import java.awt.Component;
+
+import javax.swing.border.EtchedBorder;
+import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
+import javax.swing.border.SoftBevelBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.event.ActionListener;
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+
 import java.net.Socket;
 import java.util.*;
 import java.io.*;
-
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.EmptyBorder;
-import javax.swing.border.EtchedBorder;
-import client.UserConfig;
-
+import javax.swing.JList;
 
 public class ClientUI extends JFrame{
 
+	//é¢æ¿è®¾ç½®
 	private JPanel contentPane;
 	private JTextField textSend;	
 	private JTextArea textShow;		
@@ -29,11 +78,14 @@ public class ClientUI extends JFrame{
 	private boolean isConnect = false;
 	private BufferedReader read;
 	private PrintWriter write;
-	private Socket socket;	
-	private Map<String, User> onLineUser = new HashMap<String, User>(); // ËùÓĞÔÚÏßµÄÓÃ»§
+	private Socket socket;
+	private Map<String, User> onLineUser = new HashMap<String, User>(); // æ‰€æœ‰åœ¨çº¿çš„ç”¨æˆ·
+	//å‘é€ä¿¡æ¯çš„çº¿ç¨‹
 	private MessageThread messageThread;
 
-
+	/**
+	 * Launch the application.
+	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -47,10 +99,13 @@ public class ClientUI extends JFrame{
 		});
 	}
 
-
+	/**
+	 * Create the frame.
+	 */
 	public ClientUI() {
 		setResizable(false);
-		setTitle("ÁÄÌìÊÒ¿Í»§¶Ë");
+		setBackground(Color.PINK);
+		setTitle("èŠå¤©å®¤å®¢æˆ·ç«¯");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 500, 600);
 		contentPane = new JPanel();
@@ -67,7 +122,7 @@ public class ClientUI extends JFrame{
 		menu_panel.add(panel);
 		panel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		
-		btnUser = new JButton("ÓÃ»§ÉèÖÃ");
+		btnUser = new JButton("ç”¨æˆ·è®¾ç½®");
 		
 		btnUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -75,60 +130,66 @@ public class ClientUI extends JFrame{
 				c.setVisible(true);
 			}
 		});	
+
 		btnUser.setVerticalAlignment(SwingConstants.BOTTOM);
-		btnUser.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		btnUser.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		panel.add(btnUser);
 		
-		btnConnect = new JButton("Á¬½ÓÉèÖÃ");
+		btnConnect = new JButton("è¿æ¥è®¾ç½®");
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ConnectUI c = new ConnectUI();
 				c.setVisible(true);
 			}
 		});
-		btnConnect.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+
+		btnConnect.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		panel.add(btnConnect);
 		
 		JLabel label = new JLabel(" ");
 		menu_panel.add(label);
 		
 		JPanel panel_1 = new JPanel();
+
 		panel_1.setBorder(new CompoundBorder());
 		menu_panel.add(panel_1);
 		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
-		
-		btnLogin = new JButton("µÇÂ¼");
+		//ç™»å½•å‡½æ•°
+		btnLogin = new JButton("ç™»å½•");
 		btnLogin.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				login();
 			}
 		});
-		btnLogin.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+
+		btnLogin.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		panel_1.add(btnLogin);
-		
-		btnLogout = new JButton("×¢Ïú");
+		//æ³¨é”€å‡½æ•°
+		btnLogout = new JButton("æ³¨é”€");
 		btnLogout.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				logout();
 			}
 		});
-		btnLogout.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		btnLogout.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		btnLogout.setEnabled(false);
 		panel_1.add(btnLogout);
 		
 		JLabel label_1 = new JLabel(" ");
 		panel_1.add(label_1);
-		
-		JButton btnExit = new JButton("ÍË³ö");
+		//é€€å‡ºå‡½æ•°
+		JButton btnExit = new JButton("é€€å‡º");
 		btnExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
 			}
 		});
 		panel_1.add(btnExit);
-		btnExit.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+
+		btnExit.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		
 		JPanel message_panel = new JPanel();
+
 		contentPane.add(message_panel, BorderLayout.SOUTH);
 		message_panel.setLayout(new GridLayout(3, 1, 0, 3));
 		
@@ -138,21 +199,21 @@ public class ClientUI extends JFrame{
 		panel_2.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
 		comboBox = new JComboBox();
-		comboBox.addItem("ËùÓĞÈË");
+		comboBox.addItem("æ‰€æœ‰äºº");
 		comboBox.setSelectedIndex(0);
-		comboBox.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));		
+		comboBox.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 14));		
 		panel_2.add(comboBox);
 		
 		JLabel label_3 = new JLabel("                        ");
 		panel_2.add(label_3);
-		
-		JButton btnPrivate = new JButton("Ë½ÁÄ");
+		//ç§èŠåŠŸèƒ½
+		JButton btnPrivate = new JButton("ç§èŠ");
 		btnPrivate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				sendToOne();
 			}
 		});
-		btnPrivate.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));
+		btnPrivate.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 14));
 		panel_2.add(btnPrivate);
 
 		
@@ -161,17 +222,17 @@ public class ClientUI extends JFrame{
 		panel_3.setBorder(new CompoundBorder());
 		message_panel.add(panel_3);
 		
-		JLabel send = new JLabel("·¢ËÍĞÅÏ¢£º");
+		JLabel send = new JLabel("å‘é€ä¿¡æ¯ï¼š");
 		panel_3.add(send);
-		send.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		send.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		
 		textSend = new JTextField();
 		textSend.setEditable(false);
-		textSend.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));
+		textSend.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 14));
 		textSend.setHorizontalAlignment(SwingConstants.CENTER);
 		panel_3.add(textSend);
 		textSend.setColumns(20);
-		//¸øÎÄ±¾¿òÔö¼Ó»Ø³µ·¢ËÍ¹¦ÄÜ
+		//ç»™æ–‡æœ¬æ¡†å¢åŠ å›è½¦å‘é€åŠŸèƒ½
 		textSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				send();
@@ -181,32 +242,46 @@ public class ClientUI extends JFrame{
 		JLabel label_2 = new JLabel("     ");
 		panel_3.add(label_2);
 		
-		//µ¥»÷·¢ËÍ
-		btnSend = new JButton("·¢ËÍ");
+		//å•å‡»å‘é€
+		btnSend = new JButton("å‘é€");
 		btnSend.setEnabled(false);
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				send();
 			}
 		});
-		btnSend.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		btnSend.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		panel_3.add(btnSend);
 		
 		JPanel panel_4 = new JPanel();
 		panel_4.setBorder(new CompoundBorder());
+
 		message_panel.add(panel_4);
 		panel_4.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		JButton btnHelp = new JButton("ÉÏ´«");
-		panel_4.add(btnHelp);
-		btnHelp.addActionListener(new ActionListener() {
+		JButton btnUpload = new JButton("ä¸Šä¼ ");
+		JButton btnDownload = new JButton("ä¸‹è½½");
+		panel_4.add(btnUpload);
+		panel_4.add(btnDownload);
+		btnUpload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-			
+				try {
+					upload();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}//ä¸Šä¼ å‡½æ•°
 			}
 		});
-		btnHelp.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		btnUpload.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		
+		btnDownload.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
+		
+		btnDownload.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				download();
+			}
+		});
 		JPanel user_panel = new JPanel();
 		user_panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		contentPane.add(user_panel, BorderLayout.CENTER);
@@ -214,70 +289,130 @@ public class ClientUI extends JFrame{
 		
 		textShow = new JTextArea();
 		textShow.setEditable(false);
-		textShow.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));
+		textShow.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 14));
 		JScrollPane scrollPane = new JScrollPane();
 		user_panel.add(scrollPane);
 		scrollPane.setBounds(23, 217, 650, 266);
 		textShow.setBounds(23, 217, 650, 266);
 		scrollPane.setViewportView(textShow);
 	}
-	
+	//ä¸Šä¼ åŠŸèƒ½
+	public synchronized void upload() throws IOException
+	{
+		JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+        "doc","txt","docx");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(chooser);
+        if(returnVal == JFileChooser.APPROVE_OPTION)
+        {
+        	//å‘é€æ–‡ä»¶å‘é€äººçš„æ–‡ä»¶å
+			File file = chooser.getSelectedFile();
+			sendMessage(this.getTitle() + "@" + "Upload" + "@" + file.getName());
+			//ä¼ é€æ–‡ä»¶
+			FileThread filethread = new FileThread(file);
+			filethread.start();
+        }
+        	
+	}
+	public synchronized void download()
+	{
+		//å‘é€ä¸‹è½½ä¿¡æ¯
+		sendMessage(this.getTitle() + "@" + "Download" + "@" + "null");
+		
+		DownLoadThread downloadthread = new DownLoadThread();
+		downloadthread.start();
+	}
+	class DownLoadThread extends Thread{
+		public DownLoadThread()
+		{
+			super();
+		}
+		public void run()
+		{
+			try {
+				Socket downloadsocket = new Socket(socket.getInetAddress(), 9997);
 
+				DataInputStream is = new DataInputStream(downloadsocket.getInputStream());
+				OutputStream os = socket.getOutputStream();
+				
+				String filename = "D:\\Test\\Client\\download.doc";
+				FileOutputStream fos = new FileOutputStream(filename);
+				byte[] b = new byte[1024];
+				int length = 0;
+				while((length = is.read(b)) != -1)
+				{
+					fos.write(b, 0, length);
+				}
+				fos.flush();
+				fos.close();
+				is.close();
+				downloadsocket.close();
+				ClientUI.this.sendMessage(ClientUI.this.getTitle() + "@" + "Finish" + "@" + "null");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
+	//å‘é€ä¿¡æ¯
 	public synchronized void send(){
 		if(!isConnect){
-			JOptionPane.showMessageDialog(this, "»¹Ã»ÓĞÁ¬½Ó·şÎñÆ÷£¬ÎŞ·¨·¢ËÍÏûÏ¢£¡");
+			JOptionPane.showMessageDialog(this, "è¿˜æ²¡æœ‰è¿æ¥æœåŠ¡å™¨ï¼Œæ— æ³•å‘é€æ¶ˆæ¯ï¼");
 			return;
 		}
 		String message = textSend.getText().trim();
 		if(message == null || message.equals("")){
-			JOptionPane.showMessageDialog(this, "ÏûÏ¢²»ÄÜÎª¿Õ");
+			JOptionPane.showMessageDialog(this, "æ¶ˆæ¯ä¸èƒ½ä¸ºç©º");
 			return;
 		}
 		sendMessage(this.getTitle() + "@" + "ALL" + "@" + message);
 		textSend.setText(null);
 	}
-	
+	//ç§èŠå‘é€
 	public synchronized void sendToOne() {
 		if(!isConnect){
-			JOptionPane.showMessageDialog(this, "»¹Ã»ÓĞÁ¬½Ó·şÎñÆ÷£¬ÎŞ·¨·¢ËÍÏûÏ¢£¡");
+			JOptionPane.showMessageDialog(this, "è¿˜æ²¡æœ‰è¿æ¥æœåŠ¡å™¨ï¼Œæ— æ³•å‘é€æ¶ˆæ¯ï¼");
 			return;
 		}
 		String message = textSend.getText().trim();
 		if(message == null || message.equals("")){
-			JOptionPane.showMessageDialog(this, "ÏûÏ¢²»ÄÜÎª¿Õ");
+			JOptionPane.showMessageDialog(this, "æ¶ˆæ¯ä¸èƒ½ä¸ºç©º");
 			return;
 		}
 		String name = comboBox.getSelectedItem().toString();
 		sendMessage(this.getTitle() + "@" + "ONE" + "@" + message + "@" + name);
 		textSend.setText(null);
 	}
-	
 
+	
+	//ç™»å½•æ“ä½œ
 	public void login() {
 		int port = -1;
 		if(isConnect){
-			JOptionPane.showMessageDialog(this, "ÒÑ¾­´¦ÓÚÁ¬½Ó×´Ì¬£¬²»ÄÜÖØ¸´Á¬½Ó£¡");
+			JOptionPane.showMessageDialog(this, "å·²ç»å¤„äºè¿æ¥çŠ¶æ€ï¼Œä¸èƒ½é‡å¤è¿æ¥ï¼");
 			return;
 		}
 		try {
 			try {
 				port = Integer.parseInt(ConnectUI.portNumber.getText().trim());
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(this, "ÊäÈëµÄ¶Ë¿ÚºÅ²»¹æ·¶£¬ÒªÇóÎªÕûÊı£¡");
+				JOptionPane.showMessageDialog(this, "è¾“å…¥çš„ç«¯å£å·ä¸è§„èŒƒï¼Œè¦æ±‚ä¸ºæ•´æ•°ï¼");
 			}
 			String hostIp = ConnectUI.IpNumber.getText().trim();
 			String name = UserConfig.textName.getText().trim();
 			if(hostIp.equals("") || name.equals("")){
-				JOptionPane.showMessageDialog(this, "IpµØÖ·ºÍÓÃ»§Ãû¶¼²»ÄÜÎª¿Õ£¡");
+				JOptionPane.showMessageDialog(this, "Ipåœ°å€å’Œç”¨æˆ·åéƒ½ä¸èƒ½ä¸ºç©ºï¼");
 				return;
 			}
 			boolean flag = connecServer(port, hostIp, name);
 			if(flag == false){
-				JOptionPane.showMessageDialog(this, "Óë·şÎñÆ÷Á¬½ÓÊ§°Ü£¡");
+				JOptionPane.showMessageDialog(this, "ä¸æœåŠ¡å™¨è¿æ¥å¤±è´¥ï¼");
 				return;
 			}
-			this.setTitle(name);  //ÉèÖÃ¿Í»§¶Ë´°¿Ú±êÌâÎªÓÃ»§Ãû
-			JOptionPane.showMessageDialog(this, "³É¹¦Á¬½Ó£¡");
+			this.setTitle(name);  //è®¾ç½®å®¢æˆ·ç«¯çª—å£æ ‡é¢˜ä¸ºç”¨æˆ·å
+			JOptionPane.showMessageDialog(this, "æˆåŠŸè¿æ¥ï¼");
 			
 			comboBox.addItem(name);
 			comboBox.revalidate();
@@ -294,23 +429,23 @@ public class ClientUI extends JFrame{
 		}
 	}
 	
-
+	//æ³¨é”€æ“ä½œ
 	public void logout(){
 		
 		String hostIp = ConnectUI.IpNumber.getText().trim();
 		String name = UserConfig.textName.getText().trim();
 		
 		if(!isConnect){
-			JOptionPane.showMessageDialog(this, "ÒÑ¾­ÊÇ¶Ï¿ª×´Ì¬ÁËÅ¶£¡");
+			JOptionPane.showMessageDialog(this, "å·²ç»æ˜¯æ–­å¼€çŠ¶æ€äº†å“¦ï¼");
 			return;
 		}
 		try {
-			boolean flag = closeConnect();		//¶Ï¿ªÁ¬½Ó
+			boolean flag = closeConnect();		//æ–­å¼€è¿æ¥
 			if(!flag){
-				JOptionPane.showMessageDialog(this, "¶Ï¿ªÁ¬½Ó·¢ÉúÒì³££¡");
+				JOptionPane.showMessageDialog(this, "æ–­å¼€è¿æ¥å‘ç”Ÿå¼‚å¸¸ï¼");
 				return;
 			}
-			JOptionPane.showMessageDialog(this,"¶Ï¿ª³É¹¦£¡");				                
+			JOptionPane.showMessageDialog(this,"æ–­å¼€æˆåŠŸï¼");				                
 			
 			comboBox.removeAllItems();
 			comboBox.revalidate();
@@ -327,33 +462,34 @@ public class ClientUI extends JFrame{
 		}
 			
 	}
-
+ 
+	//è¿æ¥æœåŠ¡å™¨
 	public boolean connecServer(int port, String hostIp, String name) {
 		try {
-			socket = new Socket(hostIp, port); // ¸ù¾İ¶Ë¿ÚºÅºÅºÍ·şÎñÆ÷
+			socket = new Socket(hostIp, port); // æ ¹æ®ç«¯å£å·å·å’ŒæœåŠ¡å™¨
 			write = new PrintWriter(socket.getOutputStream());
 			read = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-			//·¢ËÍ¿Í»§¶ËµÄ»ù±¾ĞÅÏ¢
+			//å‘é€å®¢æˆ·ç«¯çš„åŸºæœ¬ä¿¡æ¯
 			sendMessage(name+"@"+socket.getLocalAddress().toString());
-			//¿ªÆô½ÓÊÕÏûÏ¢µÄÏß³Ì
+			//å¼€å¯æ¥æ”¶æ¶ˆæ¯çš„çº¿ç¨‹
 			messageThread = new MessageThread();
 			messageThread.start();
-			isConnect = true;		//×´Ì¬¸ÄÎª£ºÒÑÁ¬½Ó
+			isConnect = true;		//çŠ¶æ€æ”¹ä¸ºï¼šå·²è¿æ¥
 			
 			return true;
 		} catch (Exception e) {
-			textShow.append("Óë¶Ë¿ÚºÅÎª£º"+port+",   IpµØÖ·Îª£º"+hostIp+"µÄ·şÎñÆ÷Á¬½ÓÊ§°Ü£¡\r\n");
-			isConnect = false;		//×´Ì¬Îª£ºÎ´Á¬½Ó
+			textShow.append("ä¸ç«¯å£å·ä¸ºï¼š"+port+",   Ipåœ°å€ä¸ºï¼š"+hostIp+"çš„æœåŠ¡å™¨è¿æ¥å¤±è´¥ï¼\r\n");
+			isConnect = false;		//çŠ¶æ€ä¸ºï¼šæœªè¿æ¥
 			return false;
 		}
 	}
  
-
+	//å…³é—­è¿æ¥
 	public synchronized boolean closeConnect() {
 		try {
-			sendMessage("CLOSE"); // ·¢ËÍ¶Ï¿ªÁ¬½ÓÃüÁî¸ø·şÎñÆ÷
-			messageThread.stop(); // Í£Ö¹½ÓÊÜÏûÏ¢µÄÏß³Ì
-			// ÊÍ·Å×ÊÔ´
+			sendMessage("CLOSE"); // å‘é€æ–­å¼€è¿æ¥å‘½ä»¤ç»™æœåŠ¡å™¨
+			messageThread.stop(); // åœæ­¢æ¥å—æ¶ˆæ¯çš„çº¿ç¨‹
+			// é‡Šæ”¾èµ„æº
 			if (read != null) {
 				read.close();
 			}
@@ -373,24 +509,52 @@ public class ClientUI extends JFrame{
  
 	}
  
-
+	//å‘é€ä¿¡æ¯
 	public synchronized void sendMessage(String message) {
 		write.println(message);
 		write.flush();
 	}
-
+	//å‘é€æ–‡ä»¶çš„çº¿ç¨‹
+	class FileThread extends Thread{
+		private File file;
+		public FileThread(File f){
+			super();
+			this.file = f;
+		}
+		public void run()
+		{
+			try {
+				Socket filesocket = new Socket(socket.getInetAddress(), 9999);
+				byte [] sendByte = new byte[1024];
+				int length = 0;
+				FileInputStream fis = new FileInputStream(file);
+				
+				DataOutputStream dos = new DataOutputStream(filesocket.getOutputStream());
+				while((length = fis.read(sendByte)) > 0) {
+					dos.write(sendByte, 0, length);
+					dos.flush();
+				}
+				filesocket.close();
+				fis.close();
+				dos.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	//å‘é€ä¿¡æ¯çš„çº¿ç¨‹
 	class MessageThread extends Thread {
  
-		// ½ÓÊÕÏûÏ¢Ïß³ÌµÄ¹¹Ôì·½·¨
+		// æ¥æ”¶æ¶ˆæ¯çº¿ç¨‹çš„æ„é€ æ–¹æ³•
 		public MessageThread() {
 			super();
 		}
- 
 		public synchronized void closeConnect() throws Exception {
-			//Çå¿ÕÓÃ»§ÁĞ±í
+			//æ¸…ç©ºç”¨æˆ·åˆ—è¡¨
 			comboBox.removeAllItems();
 			
-			// ±»¶¯¹Ø±ÕÁ¬½ÓÊÍ·Å×ÊÔ´
+			// è¢«åŠ¨å…³é—­è¿æ¥é‡Šæ”¾èµ„æº
 			if (read != null) {
 				read.close();
 			}
@@ -400,7 +564,7 @@ public class ClientUI extends JFrame{
 			if (socket != null) {
 				socket.close();
 			}
-			isConnect = false; // ½«×´Ì¬¸ÄÎªÎ´Á¬½Ó×´Ì¬
+			isConnect = false; // å°†çŠ¶æ€æ”¹ä¸ºæœªè¿æ¥çŠ¶æ€
 			btnConnect.setEnabled(true);
 			btnUser.setEnabled(true);
 			btnLogin.setEnabled(true);
@@ -409,18 +573,18 @@ public class ClientUI extends JFrame{
 			btnSend.setEnabled(false);
 		}
  
-		public void run() { // ²»¶Ï½ÓÊÜÏûÏ¢
+		public void run() { // ä¸æ–­æ¥å—æ¶ˆæ¯
 			String message = "";
 			while (true) {
 				try {
 					message = read.readLine();
 					StringTokenizer st = new StringTokenizer(message, "/@");
 					String command = st.nextToken(); 
-					if (command.equals("CLOSE")) { // ¹Ø±ÕÃüÁî
-						textShow.append("·şÎñÆ÷ÒÑ¹Ø±Õ£¡\r\n");
-						closeConnect(); // ±»¶¯¹Ø±ÕÁ¬½Ó
-						return; // ½áÊøÏß³Ì
-					} else if (command.equals("ADD")) { // ÓĞÓÃ»§ÉÏÏß¸üĞÂÁĞ±í
+					if (command.equals("CLOSE")) { // å…³é—­å‘½ä»¤
+						textShow.append("æœåŠ¡å™¨å·²å…³é—­ï¼\r\n");
+						closeConnect(); // è¢«åŠ¨å…³é—­è¿æ¥
+						return; // ç»“æŸçº¿ç¨‹
+					} else if (command.equals("ADD")) { // æœ‰ç”¨æˆ·ä¸Šçº¿æ›´æ–°åˆ—è¡¨
 						String userName = "";
 						String userIp = "";
 						if ((userName = st.nextToken()) != null) {
@@ -429,16 +593,16 @@ public class ClientUI extends JFrame{
 							comboBox.addItem(userName);
 							comboBox.revalidate();
 						}
-						textShow.append("[ÏµÍ³Í¨Öª] " + userName + "ÉÏÏßÁË£¡\r\n");
-					} else if (command.equals("DELETE")) { // ÓĞÓÃ»§ÏÂÏß¸üĞÂÁĞ±í
+						textShow.append("[ç³»ç»Ÿé€šçŸ¥] " + userName + "ä¸Šçº¿äº†ï¼\r\n");
+					} else if (command.equals("DELETE")) { // æœ‰ç”¨æˆ·ä¸‹çº¿æ›´æ–°åˆ—è¡¨
 						String userName = st.nextToken();
 						User user = (User) onLineUser.get(userName);
 						onLineUser.remove(userName);					
 						
 						comboBox.removeItem(userName);
 						comboBox.revalidate();
-						textShow.append("[ÏµÍ³Í¨Öª] " + userName + "ÏÂÏßÁË£¡\r\n");
-					} else if (command.equals("USERLIST")) {  //¸üĞÂÓÃ»§ÁĞ±í
+						textShow.append("[ç³»ç»Ÿé€šçŸ¥] " + userName + "ä¸‹çº¿äº†ï¼\r\n");
+					} else if (command.equals("USERLIST")) {  //æ›´æ–°ç”¨æˆ·åˆ—è¡¨
 						int size = Integer.parseInt(st.nextToken());
 						String userName = null;
 						String userIp = null;
@@ -451,11 +615,11 @@ public class ClientUI extends JFrame{
 							comboBox.revalidate();
 						}
 					}
-					else if(command.equals("ONE")){
-						String msg = st.nextToken();
-						textShow.append(msg + "\r\n");
-					}
-					else { // ÆÕÍ¨ÏûÏ¢
+//					else if(command.equals("ONE")){
+//						String msg = st.nextToken();
+//						textShow.append(msg + "\r\n");
+//					}
+					else { // æ™®é€šæ¶ˆæ¯
 						textShow.append(message + "\r\n");
 					}
  
