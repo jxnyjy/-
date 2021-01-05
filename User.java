@@ -1,4 +1,4 @@
-package server;
+package client;
 
 public class User {
 	private String name;
@@ -25,4 +25,3 @@ public class User {
 		this.ip = ip;
 	}
 }
-

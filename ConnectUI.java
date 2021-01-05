@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -41,7 +41,7 @@ public class ConnectUI extends JFrame{
 
 	public ConnectUI() {
 		setResizable(false);
-		setTitle("è¿æ¥è®¾ç½®");
+		setTitle("Á¬½ÓÉèÖÃ");
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 350, 194);
 		contentPane = new JPanel();
@@ -53,13 +53,13 @@ public class ConnectUI extends JFrame{
 		panel.setBorder(new CompoundBorder());
 		contentPane.add(panel);
 		
-		JLabel lblNewLabel = new JLabel("è¯·è¾“å…¥æœåŠ¡å™¨çš„IPåœ°å€ï¼š");
-		lblNewLabel.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 18));
+		JLabel lblNewLabel = new JLabel("ÇëÊäÈë·şÎñÆ÷µÄIPµØÖ·£º");
+		lblNewLabel.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 18));
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblNewLabel);
 		
 		IpNumber = new JTextField();
-		IpNumber.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 12));
+		IpNumber.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
 		IpNumber.setText("127.0.0.1");
 		panel.add(IpNumber);
 		IpNumber.setColumns(8);
@@ -68,12 +68,12 @@ public class ConnectUI extends JFrame{
 		panel_2.setBorder(new CompoundBorder());
 		contentPane.add(panel_2);
 		
-		JLabel label = new JLabel("è¯·è¾“å…¥æœåŠ¡å™¨çš„ç«¯å£å·ï¼š");
-		label.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 18));
+		JLabel label = new JLabel("ÇëÊäÈë·şÎñÆ÷µÄ¶Ë¿ÚºÅ£º");
+		label.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 18));
 		panel_2.add(label);
 		
 		portNumber = new JTextField();
-		portNumber.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 12));
+		portNumber.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
 		portNumber.setText("9343");
 		panel_2.add(portNumber);
 		portNumber.setColumns(8);
@@ -82,7 +82,7 @@ public class ConnectUI extends JFrame{
 		panel_1.setBorder(new CompoundBorder());
 		contentPane.add(panel_1);
 		
-		JButton btnSave = new JButton("ä¿å­˜");
+		JButton btnSave = new JButton("±£´æ");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				portNumber.setText(portNumber.getText());
@@ -90,16 +90,16 @@ public class ConnectUI extends JFrame{
 				ConnectUI.this.dispose();
 			}
 		});
-		btnSave.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
+		btnSave.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
 		panel_1.add(btnSave);
 		
-		JButton btnCancle = new JButton("å–æ¶ˆ");
+		JButton btnCancle = new JButton("È¡Ïû");
 		btnCancle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				ConnectUI.this.dispose();
 			}
 		});
-		btnCancle.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
+		btnCancle.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
 		panel_1.add(btnCancle);
 	}
 

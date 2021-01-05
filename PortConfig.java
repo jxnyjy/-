@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -47,41 +47,41 @@ public class PortConfig extends JFrame implements ActionListener{
 		JPanel panel = new JPanel();
 		contentPane.add(panel);
 		
-		JLabel label = new JLabel("è¯·è¾“å…¥ä¾¦å¬çš„ç«¯å£å·ï¼š");
-		label.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
+		JLabel label = new JLabel("ÇëÊäÈëÕìÌıµÄ¶Ë¿ÚºÅ£º");
+		label.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
 		panel.add(label);
 		
 		textPort = new JTextField("9343");
-		textPort.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
+		textPort.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
 		panel.add(textPort);
 		textPort.setColumns(7);
 		
 		JPanel panel_1 = new JPanel();
 		contentPane.add(panel_1);
 		
-		JLabel label_1 = new JLabel("é»˜è®¤ç«¯å£å·ä¸ºï¼š9343");
-		label_1.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
+		JLabel label_1 = new JLabel("Ä¬ÈÏ¶Ë¿ÚºÅÎª£º9343");
+		label_1.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
 		panel_1.add(label_1);
 		
 		JPanel panel_2 = new JPanel();
 		contentPane.add(panel_2);
 		
-		JButton btnSave = new JButton("ä¿å­˜");
+		JButton btnSave = new JButton("±£´æ");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PortConfig.this.dispose();
 			}
 		});
-		btnSave.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
+		btnSave.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
 		panel_2.add(btnSave);
 		
-		JButton btnCancle = new JButton("å–æ¶ˆ");
+		JButton btnCancle = new JButton("È¡Ïû");
 		btnCancle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PortConfig.this.dispose();
 			}
 		});
-		btnCancle.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
+		btnCancle.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
 		panel_2.add(btnCancle);
 	}
 

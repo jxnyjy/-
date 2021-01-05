@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -24,9 +24,7 @@ public class UserConfig extends JFrame{
 	private JPanel contentPane;
 	public static JTextField textName;
 
-	/**
-	 * Launch the application.
-	 */
+	
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -40,12 +38,10 @@ public class UserConfig extends JFrame{
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
+
 	public UserConfig() {
 		setResizable(false);
-		setTitle("ç”¨æˆ·è®¾ç½®");
+		setTitle("ÓÃ»§ÉèÖÃ");
 		setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 300, 150);
 		contentPane = new JPanel();
@@ -58,8 +54,8 @@ public class UserConfig extends JFrame{
 		contentPane.add(panel);
 		panel.setLayout(new FlowLayout(FlowLayout.CENTER, 4, 4));
 		
-		JLabel label = new JLabel("è¯·è¾“å…¥ç”¨æˆ·åï¼š");
-		label.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 18));
+		JLabel label = new JLabel("ÇëÊäÈëÓÃ»§Ãû£º");
+		label.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 18));
 		panel.add(label);
 		
 		JLabel label_2 = new JLabel("");
@@ -72,8 +68,8 @@ public class UserConfig extends JFrame{
 		panel.add(label_1);
 		
 		textName = new JTextField();
-		textName.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
-		textName.setText("ä¸–æ˜");
+		textName.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		textName.setText("");
 		panel.add(textName);
 		textName.setColumns(5);
 		
@@ -88,7 +84,7 @@ public class UserConfig extends JFrame{
 		panel_3.setBorder(new CompoundBorder());
 		panel_2.add(panel_3);
 		
-		JButton btnSave = new JButton("ä¿å­˜");
+		JButton btnSave = new JButton("±£´æ");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JTextField textName = new JTextField();
@@ -96,20 +92,20 @@ public class UserConfig extends JFrame{
 				UserConfig.this.dispose();
 			}
 		});
-		btnSave.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
+		btnSave.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
 		panel_3.add(btnSave);
 		
 		JPanel panel_4 = new JPanel();
 		panel_4.setBorder(new CompoundBorder());
 		panel_2.add(panel_4);
 		
-		JButton btnCancel = new JButton("å–æ¶ˆ");
+		JButton btnCancel = new JButton("È¡Ïû");
 		btnCancel.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				UserConfig.this.dispose();
 			}
 		});
-		btnCancel.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
+		btnCancel.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
 		panel_4.add(btnCancel);
 	}
 }
