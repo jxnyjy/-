@@ -1,4 +1,4 @@
-package client;
+package server;
 
 import java.awt.BorderLayout;
 import java.awt.EventQueue;
@@ -53,6 +53,8 @@ import javax.swing.border.TitledBorder;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.*;
 import java.io.*;
 import java.net.BindException;
@@ -72,6 +74,7 @@ public class ServerUI extends JFrame{
 	private JButton btnSend;
 	private JButton btnHelp;
 	private JTextPane textArea;
+	private Emoji emojibox;
 	
 	private boolean isStart = false;
 	private List<ClientThread> client = null;
@@ -79,7 +82,7 @@ public class ServerUI extends JFrame{
 	private ServerThread serverThread;
 	private DefaultListModel listModel;
 	private JList userList;
-	//ÎÄ¼ş´¢´æÎ»ÖÃ
+	//æ–‡ä»¶å‚¨å­˜ä½ç½®
 	private File file;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -99,7 +102,7 @@ public class ServerUI extends JFrame{
 	 */
 	public ServerUI() {
 		setResizable(false);
-		setTitle("ÁÄÌìÊÒ·şÎñ¶Ë");
+		setTitle("èŠå¤©å®¤æœåŠ¡ç«¯");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 500, 600);
 		contentPane = new JPanel();
@@ -116,7 +119,7 @@ public class ServerUI extends JFrame{
 		menu_panel.add(panel);
 		panel.setLayout(new FlowLayout(FlowLayout.LEFT, 5, 5));
 		
-		btnUser = new JButton("¶Ë¿ÚÉèÖÃ");
+		btnUser = new JButton("ç«¯å£è®¾ç½®");
 		btnUser.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				PortConfig pc = new PortConfig();
@@ -126,17 +129,17 @@ public class ServerUI extends JFrame{
 		
 		
 		btnUser.setVerticalAlignment(SwingConstants.BOTTOM);
-		btnUser.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		btnUser.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		panel.add(btnUser);
 		
-		btnConnect = new JButton("Æô¶¯·şÎñ");
+		btnConnect = new JButton("å¯åŠ¨æœåŠ¡");
 		btnConnect.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				start();
 			}
 		});
 		
-		btnConnect.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		btnConnect.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		panel.add(btnConnect);
 		
 		JLabel label = new JLabel(" ");
@@ -147,20 +150,20 @@ public class ServerUI extends JFrame{
 		menu_panel.add(panel_1);
 		panel_1.setLayout(new FlowLayout(FlowLayout.CENTER, 5, 5));
 		
-		btnStop = new JButton("Í£Ö¹·şÎñ");
+		btnStop = new JButton("åœæ­¢æœåŠ¡");
 		btnStop.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				stop();
 			}
 		});
 		
-		btnStop.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		btnStop.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		panel_1.add(btnStop);
 		
 		JLabel label_1 = new JLabel(" ");
 		panel_1.add(label_1);
 		
-		btnExit = new JButton("ÍË³ö");
+		btnExit = new JButton("é€€å‡º");
 		btnExit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				System.exit(0);
@@ -168,7 +171,7 @@ public class ServerUI extends JFrame{
 		});
 		
 		panel_1.add(btnExit);
-		btnExit.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		btnExit.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		
 		JPanel message_panel = new JPanel();
 		contentPane.add(message_panel, BorderLayout.SOUTH);
@@ -179,17 +182,17 @@ public class ServerUI extends JFrame{
 		panel_3.setBorder(new CompoundBorder());
 		message_panel.add(panel_3);
 		
-		JLabel send = new JLabel("·¢ËÍĞÅÏ¢£º");
+		JLabel send = new JLabel("å‘é€ä¿¡æ¯ï¼š");
 		panel_3.add(send);
-		send.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		send.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		
 		txt = new JTextPane();
 		txt.setEditable(false);
-		txt.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));
+		txt.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 14));
 		txt.setBackground(new Color(255, 255, 255));
 		panel_3.add(txt);
 		txt.setPreferredSize(new Dimension(200,20));
-		//¸øÎÄ±¾¿òÔö¼Ó»Ø³µ·¢ËÍ¹¦ÄÜ
+		//ç»™æ–‡æœ¬æ¡†å¢åŠ å›è½¦å‘é€åŠŸèƒ½
 		//txt.addActionListener(new ActionListener() {
 			//public void actionPerformed(ActionEvent e) {
 				//send();
@@ -199,17 +202,27 @@ public class ServerUI extends JFrame{
 		JLabel label_2 = new JLabel("     ");
 		panel_3.add(label_2);
 		
-		//µ¥»÷·¢ËÍ
-		btnSend = new JButton("·¢ËÍ");
+		//å•å‡»å‘é€ 
+		btnSend = new JButton("å‘é€");
+		
 		btnSend.setEnabled(false);
 		btnSend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				send();
 			}
 		});
+		//è¡¨æƒ…é€‰æ‹©              
+		
+		emojibox = new Emoji();
+		emojibox.addItemListener(new ItemListener() {
+			public void itemStateChanged(ItemEvent event) {
+				txt.setText(emojibox.getSelectedItem().toString());
+			}
+		});
+		panel_3.add(emojibox);
 		
 		
-		btnSend.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 16));
+		btnSend.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 16));
 		panel_3.add(btnSend);
 		
 		JPanel panel_4 = new JPanel();
@@ -225,7 +238,7 @@ public class ServerUI extends JFrame{
 		
 		textArea = new JTextPane();
 		textArea.setEditable(false);
-		textArea.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 14));
+		textArea.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 14));
 		JScrollPane scrollPane = new JScrollPane();
 		textArea.setBounds(23, 217, 650, 266);
 		scrollPane.setViewportView(textArea);
@@ -236,62 +249,62 @@ public class ServerUI extends JFrame{
 		scrollPane.setRowHeaderView(panel_5);
 		panel_5.setLayout(new BorderLayout(0, 0));
 		
-		JLabel label_3 = new JLabel("ÔÚÏßÓÃ»§");		
+		JLabel label_3 = new JLabel("åœ¨çº¿ç”¨æˆ·");		
 		label_3.setBackground(new Color(255, 255, 255));
 		label_3.setHorizontalAlignment(SwingConstants.CENTER);
-		label_3.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 18));
+		label_3.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 18));
 		panel_5.add(label_3, BorderLayout.NORTH);
 		
 		listModel = new DefaultListModel();
 		userList = new JList(listModel);
 		
 		userList.setForeground(new Color(0, 0, 0));
-		userList.setFont(new Font("Î¢ÈíÑÅºÚ", Font.BOLD, 12));
+		userList.setFont(new Font("å¾®è½¯é›…é»‘", Font.BOLD, 12));
 		panel_5.add(userList, BorderLayout.CENTER);
 
 	}
 	
 		public synchronized void send() {
 			if (!isStart) {
-				JOptionPane.showMessageDialog(this, "·şÎñÆ÷»¹Î´Æô¶¯£¬ÇëÏÈÆô¶¯·şÎñÆ÷");
+				JOptionPane.showMessageDialog(this, "æœåŠ¡å™¨è¿˜æœªå¯åŠ¨ï¼Œè¯·å…ˆå¯åŠ¨æœåŠ¡å™¨");
 				return;
 			}
 			if (client.size() == 0) {
-				JOptionPane.showMessageDialog(this, "Ã»ÓĞÓÃ»§ÔÚÏß£¬²»ÄÜ·¢ËÍÏûÏ¢£¡");
+				JOptionPane.showMessageDialog(this, "æ²¡æœ‰ç”¨æˆ·åœ¨çº¿ï¼Œä¸èƒ½å‘é€æ¶ˆæ¯ï¼");
 				return;
 			}
-			String message = txt.getText().trim(); // È¥µô×Ö·û´®Í·²¿ºÍÎ²²¿µÄ¿Õ×Ö·û´®
+			String message = txt.getText().trim(); // å»æ‰å­—ç¬¦ä¸²å¤´éƒ¨å’Œå°¾éƒ¨çš„ç©ºå­—ç¬¦ä¸²
 			if (message == null || message.equals("")) {
-				JOptionPane.showMessageDialog(this, "ÏûÏ¢²»ÄÜÎª¿Õ£¡");
+				JOptionPane.showMessageDialog(this, "æ¶ˆæ¯ä¸èƒ½ä¸ºç©ºï¼");
 				return;
 			}
-			sendServerMessage(message); // Èº·¢ÏûÏ¢
-			textArea.setText(textArea.getText() +"[ÏµÍ³Í¨Öª] " + txt.getText() + "\r\n");
+			sendServerMessage(message); // ç¾¤å‘æ¶ˆæ¯
+			textArea.setText(textArea.getText() +"[ç³»ç»Ÿé€šçŸ¥] " + txt.getText() + "\r\n");
 			txt.setText(null);
 		}
 	 
 		public synchronized void sendServerMessage(String message) {
 			for (int i = client.size() - 1; i >= 0; i--) {
-				client.get(i).getWrite().println("[ÏµÍ³Í¨Öª] " + message);
+				client.get(i).getWrite().println("[ç³»ç»Ÿé€šçŸ¥] " + message);
 				client.get(i).getWrite().flush();
 			}
 		}
 	 
 		public void start() {
 			if (isStart) {
-				JOptionPane.showMessageDialog(this, "·şÎñÆ÷ÒÑ¾­Æô¶¯¹ıÀ²£¡");
+				JOptionPane.showMessageDialog(this, "æœåŠ¡å™¨å·²ç»å¯åŠ¨è¿‡å•¦ï¼");
 				return;
 			}
 			int port = -1;
 			try {
 				port = Integer.parseInt(PortConfig.textPort.getText());
 				if (port < 0) {
-					JOptionPane.showMessageDialog(this, "¶Ë¿ÚºÅÎªÕıÕûÊı£¡");
+					JOptionPane.showMessageDialog(this, "ç«¯å£å·ä¸ºæ­£æ•´æ•°ï¼");
 					return;
 				}
 				serverStart(port);
-				textArea.setText(textArea.getText() +"·şÎñÆ÷ÒÑÆô¶¯£¡¶Ë¿ÚºÅ£º" + port + "\r\n");
-				JOptionPane.showMessageDialog(this, "·şÎñÆ÷Æô¶¯³É¹¦£¡");
+				textArea.setText(textArea.getText() +"æœåŠ¡å™¨å·²å¯åŠ¨ï¼ç«¯å£å·ï¼š" + port + "\r\n");
+				JOptionPane.showMessageDialog(this, "æœåŠ¡å™¨å¯åŠ¨æˆåŠŸï¼");
 				
 				btnConnect.setEnabled(false);
 				btnUser.setEnabled(false);
@@ -299,13 +312,13 @@ public class ServerUI extends JFrame{
 				txt.setEditable(true);
 				btnSend.setEnabled(true);
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(this, "¶Ë¿ÚºÅÎªÕıÕûÊı£¡");
+				JOptionPane.showMessageDialog(this, "ç«¯å£å·ä¸ºæ­£æ•´æ•°ï¼");
 			}
 		}
 	 
 		public void stop() {
 			if (!isStart) {
-				JOptionPane.showMessageDialog(this, "·şÎñÆ÷»¹Î´Æô¶¯£¬ÎŞĞèÍ£Ö¹£¡");
+				JOptionPane.showMessageDialog(this, "æœåŠ¡å™¨è¿˜æœªå¯åŠ¨ï¼Œæ— éœ€åœæ­¢ï¼");
 				return;
 			}
 			try {
@@ -316,15 +329,15 @@ public class ServerUI extends JFrame{
 				txt.setEditable(false);
 				btnSend.setEnabled(false);
 				
-				textArea.setText(textArea.getText() +"·şÎñÆ÷ÒÑ³É¹¦Í£Ö¹£¡\r\n");
-				JOptionPane.showMessageDialog(this, "·şÎñÆ÷ÒÑÍ£Ö¹£¡");
+				textArea.setText(textArea.getText() +"æœåŠ¡å™¨å·²æˆåŠŸåœæ­¢ï¼\r\n");
+				JOptionPane.showMessageDialog(this, "æœåŠ¡å™¨å·²åœæ­¢ï¼");
 			} catch (Exception e) {
-				JOptionPane.showMessageDialog(this, "Í£Ö¹·şÎñÆ÷·¢ÉúÒì³£!");
+				JOptionPane.showMessageDialog(this, "åœæ­¢æœåŠ¡å™¨å‘ç”Ÿå¼‚å¸¸!");
 			}
 		}
 	 
 		public void serverStart(int port) {
-			client = new ArrayList<ClientThread>();  //·Å¿Í»§¶ËÏß³Ì
+			client = new ArrayList<ClientThread>();  //æ”¾å®¢æˆ·ç«¯çº¿ç¨‹
 			try {
 				serverSocket = new ServerSocket(port);
 				serverThread = new ServerThread(serverSocket);
@@ -332,37 +345,37 @@ public class ServerUI extends JFrame{
 				isStart = true;
 			} catch (BindException e) {
 				isStart = false;
-				JOptionPane.showMessageDialog(this, "¶Ë¿ÚºÅ±»Õ¼ÓÃ£¡");
+				JOptionPane.showMessageDialog(this, "ç«¯å£å·è¢«å ç”¨ï¼");
 			} catch (Exception e) {
 				e.printStackTrace();
 				isStart = false;
-				JOptionPane.showMessageDialog(this, "·şÎñÆ÷Æô¶¯Òì³£");
+				JOptionPane.showMessageDialog(this, "æœåŠ¡å™¨å¯åŠ¨å¼‚å¸¸");
 			}
 		}
 	 
 		public void closeServer() {
 			try {
 				if (serverThread != null) {
-					serverThread.stop(); // Í£Ö¹·şÎñÏß³Ì
+					serverThread.stop(); // åœæ­¢æœåŠ¡çº¿ç¨‹
 				}
 	 
-				// ·¢²¼¸øËùÓĞÔÚÏßÓÃ»§ÏÂÏßµÄÏûÏ¢
+				// å‘å¸ƒç»™æ‰€æœ‰åœ¨çº¿ç”¨æˆ·ä¸‹çº¿çš„æ¶ˆæ¯
 				for (int i = client.size() - 1; i >= 0; i--) {
 					client.get(i).getWrite().println("CLOSE");
 					client.get(i).getWrite().flush();
-					// ÊÍ·Å×ÊÔ´
-					client.get(i).stop(); // Í£Ö¹´ËÌõÎª¿Í»§·şÎñµÄÏß³Ì
+					// é‡Šæ”¾èµ„æº
+					client.get(i).stop(); // åœæ­¢æ­¤æ¡ä¸ºå®¢æˆ·æœåŠ¡çš„çº¿ç¨‹
 					client.get(i).read.close();
 					client.get(i).write.close();
 					client.get(i).socket.close();
 					client.remove(i);
 				}
-				// ¹Ø±Õ·şÎñÆ÷Á¬½Ó
+				// å…³é—­æœåŠ¡å™¨è¿æ¥
 				if (serverSocket != null) {
 					serverSocket.close();
 				}
 				
-				listModel.removeAllElements();  //Çå¿ÕÓÃ»§ÁĞ±í
+				listModel.removeAllElements();  //æ¸…ç©ºç”¨æˆ·åˆ—è¡¨
 				isStart = false;
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -378,18 +391,18 @@ public class ServerUI extends JFrame{
 			}
 			@Override
 			public void run() {
-				// ²»Í£µØµÈ´ı¿Í»§Á¬½Ó
+				// ä¸åœåœ°ç­‰å¾…å®¢æˆ·è¿æ¥
 				while (true) {
 					try {
 						Socket socket = serverSocket.accept();
 						ClientThread clients = new ClientThread(socket);
-						clients.start(); // ¿ªÆô¿Í»§¶Ë·şÎñÏß³Ì
+						clients.start(); // å¼€å¯å®¢æˆ·ç«¯æœåŠ¡çº¿ç¨‹
 						
 						client.add(clients);
 						
-						listModel.addElement(clients.getUser().getName());  //¸üĞÂÔÚÏßÁĞ±í
+						listModel.addElement(clients.getUser().getName());  //æ›´æ–°åœ¨çº¿åˆ—è¡¨
 						
-						textArea.setText(textArea.getText() +"[ÏµÍ³Í¨Öª] " + clients.getUser().getName() + "ÉÏÏßÁË£¡\r\n");
+						textArea.setText(textArea.getText() +"[ç³»ç»Ÿé€šçŸ¥] " + clients.getUser().getName() + "ä¸Šçº¿äº†ï¼\r\n");
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
@@ -466,7 +479,7 @@ public class ServerUI extends JFrame{
 			private PrintWriter write;
 			private User user;
 			
-			//ÎªÓÃ»§Ìá¹©ÊäÈëÊä³öÁ÷µÄgetter·½·¨
+			//ä¸ºç”¨æˆ·æä¾›è¾“å…¥è¾“å‡ºæµçš„getteræ–¹æ³•
 			public BufferedReader getRead() {
 				return read;
 			}
@@ -485,14 +498,14 @@ public class ServerUI extends JFrame{
 				try {
 					read = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 					write = new PrintWriter(socket.getOutputStream());
-					// ½ÓÊÜÓÃ»§ĞÅÏ¢
+					// æ¥å—ç”¨æˆ·ä¿¡æ¯
 					String info = read.readLine();
 					StringTokenizer st = new StringTokenizer(info, "@");
 					user = new User(st.nextToken(), st.nextToken());
-					// ·´À¡Á¬½Ó³É¹¦µÄĞÅÏ¢
-					write.print("[ÏµÍ³Í¨Öª] " + user.getName() + "Óë·şÎñÆ÷Á¬½Ó³É¹¦£¡\r\n");
+					// åé¦ˆè¿æ¥æˆåŠŸçš„ä¿¡æ¯
+					write.print("[ç³»ç»Ÿé€šçŸ¥] " + user.getName() + "ä¸æœåŠ¡å™¨è¿æ¥æˆåŠŸï¼\r\n");
 					write.flush();
-					// ·´À¡µ±Ç°ËùÓĞÔÚÏßÓÃ»§ĞÅÏ¢
+					// åé¦ˆå½“å‰æ‰€æœ‰åœ¨çº¿ç”¨æˆ·ä¿¡æ¯
 					if (client.size() > 0) {
 						String temp = "";
 						for (int i = client.size() - 1; i >= 0; i--) {
@@ -504,7 +517,7 @@ public class ServerUI extends JFrame{
 						write.flush();
 					}
 	 
-					// ÏòËùÓĞµÄÓÃ»§·¢ËÍ¸ÃÓÃ»§ÉÏÏßµÄÏûÏ¢
+					// å‘æ‰€æœ‰çš„ç”¨æˆ·å‘é€è¯¥ç”¨æˆ·ä¸Šçº¿çš„æ¶ˆæ¯
 					for (int i = client.size() - 1; i >= 0; i--) {
 						client.get(i).getWrite()
 								.println("ADD@" + user.getName());
@@ -519,15 +532,15 @@ public class ServerUI extends JFrame{
 				String message = null;
 				while (true) {
 					try {
-						message = read.readLine(); // ½ÓÊÜÏûÏ¢
-						if (message.equals("CLOSE")) { // ÏÂÏßÃüÁî
-							textArea.setText(textArea.getText() +"[ÏµÍ³Í¨Öª] " + this.getUser().getName() + "ÏÂÏß!\r\n");
-							// ¶Ï¿ªÁ¬½ÓµÄ×ÊÔ´
+						message = read.readLine(); // æ¥å—æ¶ˆæ¯
+						if (message.equals("CLOSE")) { // ä¸‹çº¿å‘½ä»¤
+							textArea.setText(textArea.getText() +"[ç³»ç»Ÿé€šçŸ¥] " + this.getUser().getName() + "ä¸‹çº¿!\r\n");
+							// æ–­å¼€è¿æ¥çš„èµ„æº
 							read.close();
 							write.close();
 							socket.close();
 	 
-							// ÏòËùÓĞÔÚÏßÓÃ»§·¢ËÍ¸ÃÓÃ»§ÏÂÏßµÄÏûÏ¢
+							// å‘æ‰€æœ‰åœ¨çº¿ç”¨æˆ·å‘é€è¯¥ç”¨æˆ·ä¸‹çº¿çš„æ¶ˆæ¯
 							for (int i = client.size() - 1; i >= 0; i--) {
 								client.get(i).getWrite()
 								.println("DELETE@"+ client.get(i).getUser().getName());
@@ -536,12 +549,12 @@ public class ServerUI extends JFrame{
 							
 							listModel.removeElement(user.getName());
 							
-							// É¾³ı´ËÌõ¿Í»§¶ËµÄ·şÎñÏß³Ì
+							// åˆ é™¤æ­¤æ¡å®¢æˆ·ç«¯çš„æœåŠ¡çº¿ç¨‹
 							for (int i = client.size() - 1; i >= 0; i--) {
 								if (client.get(i).getUser() == user) {
 									ClientThread temp = client.get(i);
-									client.remove(i); // É¾³ı´ËÓÃ»§µÄ·şÎñÏß³Ì
-									temp.stop(); // Í£Ö¹¸ÃÌõÏß³Ì
+									client.remove(i); // åˆ é™¤æ­¤ç”¨æˆ·çš„æœåŠ¡çº¿ç¨‹
+									temp.stop(); // åœæ­¢è¯¥æ¡çº¿ç¨‹
 									return;
 								}
 							}
@@ -557,54 +570,54 @@ public class ServerUI extends JFrame{
 		}
 	 
 		public synchronized void sendMessage(String message) {
-			StringTokenizer st = new StringTokenizer(message, "@");//ÓÃ@×÷Îª·Ö¸ô·û·Ö¸ôĞÅÏ¢
-			String name = st.nextToken();		//°´¸ñÊ½È¡£¬µÚÒ»¸öÓÃ»§Ãû³Æ
-			String owner = st.nextToken();		//ÅĞ¶ÏÈº·¢»¹ÊÇË½ÁÄ
-			String contant = st.nextToken();	//ÏûÏ¢ÄÚÈİ
-			if (owner.equals("ALL")) { // Èº·¢
-				message = name + "Ëµ£º" + contant;
+			StringTokenizer st = new StringTokenizer(message, "@");//ç”¨@ä½œä¸ºåˆ†éš”ç¬¦åˆ†éš”ä¿¡æ¯
+			String name = st.nextToken();		//æŒ‰æ ¼å¼å–ï¼Œç¬¬ä¸€ä¸ªç”¨æˆ·åç§°
+			String owner = st.nextToken();		//åˆ¤æ–­ç¾¤å‘è¿˜æ˜¯ç§èŠ
+			String contant = st.nextToken();	//æ¶ˆæ¯å†…å®¹
+			if (owner.equals("ALL")) { // ç¾¤å‘
+				message = name + "è¯´ï¼š" + contant;
 				textArea.setText(textArea.getText() +message + "\r\n");
 				for (int i = client.size() - 1; i >= 0; i--) {
-					client.get(i).getWrite().println(message);  //»ñÈ¡ÓÃ»§µÄÊä³öÁ÷²¢´òÓ¡ĞÅÏ¢
-					client.get(i).getWrite().flush();	//Çå¿Õ»º´æÇø
+					client.get(i).getWrite().println(message);  //è·å–ç”¨æˆ·çš„è¾“å‡ºæµå¹¶æ‰“å°ä¿¡æ¯
+					client.get(i).getWrite().flush();	//æ¸…ç©ºç¼“å­˜åŒº
 				}
 			}
-			else if(owner.equals("ONE")) {//Ë½ÁÄ
-				String privateName = st.nextToken(); //»ñÈ¡Ë½ÁÄ¶ÔÏóµÄÃû×Ö	
+			else if(owner.equals("ONE")) {//ç§èŠ
+				String privateName = st.nextToken(); //è·å–ç§èŠå¯¹è±¡çš„åå­—	
 				for (int i = client.size() - 1; i >= 0; i--) {
 					if (client.get(i).getUser().getName() .equals(privateName) ) {	
-					    //System.out.println("Ë½ÁÄ");
-						message = name + "¶Ô" + privateName +"Ëµ£º" + contant;					
+					    //System.out.println("ç§èŠ");
+						message = name + "å¯¹" + privateName +"è¯´ï¼š" + contant;					
 						client.get(i).getWrite().println(message);
 					    client.get(i).getWrite().flush();
 				}
 					if (client.get(i).getUser().getName() .equals(name) )
 						{
-						message = name + "¶Ô" + privateName +"Ëµ£º" + contant;					
+						message = name + "å¯¹" + privateName +"è¯´ï¼š" + contant;					
 					    client.get(i).getWrite().println(message);
 				        client.get(i).getWrite().flush();
 						}
 				}
 			}else if(owner.equals("Upload"))
 			{
-				message = name + "ÉÏ´«ÁËÎÄ¼ş£º" + contant;
-				//Ö´ĞĞÏß³Ì
+				message = name + "ä¸Šä¼ äº†æ–‡ä»¶ï¼š" + contant;
+				//æ‰§è¡Œçº¿ç¨‹
 				DownLoadThread downthread = new DownLoadThread(contant);
 				downthread.start();
 				
 				textArea.setText(textArea.getText() +message + "\r\n");
 				for (int i = client.size() - 1; i >= 0; i--) {
-					client.get(i).getWrite().println(message);  //»ñÈ¡ÓÃ»§µÄÊä³öÁ÷²¢´òÓ¡ĞÅÏ¢
-					client.get(i).getWrite().flush();	//Çå¿Õ»º´æÇø
+					client.get(i).getWrite().println(message);  //è·å–ç”¨æˆ·çš„è¾“å‡ºæµå¹¶æ‰“å°ä¿¡æ¯
+					client.get(i).getWrite().flush();	//æ¸…ç©ºç¼“å­˜åŒº
 				}
 			}else if(owner.equals("Download"))
 			{
 				if(file == null) {
-					message = "»¹Ã»ÓĞÈËÉÏ´«¹ıÎÄ¼ş";
+					message = "è¿˜æ²¡æœ‰äººä¸Šä¼ è¿‡æ–‡ä»¶";
 					for(int i = client.size() - 1; i >= 0; i--) {
 						if(client.get(i).getUser().getName() .equals(name))
 						{
-							client.get(i).getWrite().println(message);  //»ñÈ¡ÓÃ»§µÄÊä³öÁ÷²¢´òÓ¡ĞÅÏ¢
+							client.get(i).getWrite().println(message);  //è·å–ç”¨æˆ·çš„è¾“å‡ºæµå¹¶æ‰“å°ä¿¡æ¯
 							client.get(i).getWrite().flush();
 							break;
 						}
@@ -612,7 +625,7 @@ public class ServerUI extends JFrame{
 				}else {
 					UpLoadThread uploadthread = new UpLoadThread();
 					uploadthread.start();
-					message = name + "¿ªÊ¼ÏÂÔØÎÄ¼ş" + file.getName();
+					message = name + "å¼€å§‹ä¸‹è½½æ–‡ä»¶" + file.getName();
 					textArea.setText(textArea.getText() +message + "\r\n");
 					for(int i = client.size() - 1; i >= 0; i--) {
 						client.get(i).getWrite().println(message);
@@ -622,7 +635,7 @@ public class ServerUI extends JFrame{
 				
 			}else if(owner.equals("Finish"))
 			{
-				message = name + "ÏÂÔØÍê³É";
+				message = name + "ä¸‹è½½å®Œæˆ";
 				textArea.setText(textArea.getText() +message + "\r\n");
 				for(int i = client.size() - 1; i >= 0; i--) {
 					client.get(i).getWrite().println(message);
