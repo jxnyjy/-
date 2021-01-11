@@ -1,52 +1,19 @@
 package server;
 
-import java.awt.BorderLayout;
-import java.awt.EventQueue;
+import java.awt.*;
 
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JTextArea;
-import javax.swing.BoxLayout;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.DefaultListModel;
 
-import java.awt.FlowLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JButton;
-import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
-import java.awt.GridBagLayout;
-import java.awt.GridBagConstraints;
-import java.awt.Insets;
-import java.awt.CardLayout;
-import java.awt.Font;
-import javax.swing.UIManager;
-import javax.swing.SwingConstants;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 
 import java.awt.Window.Type;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
 
-import javax.swing.JToggleButton;
-import javax.swing.ListModel;
-
-import java.awt.GridLayout;
-import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
 
 import javax.swing.border.EtchedBorder;
-import javax.swing.JEditorPane;
-import javax.swing.JFileChooser;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -59,7 +26,6 @@ import java.awt.event.ActionEvent;
 import java.net.Socket;
 import java.util.*;
 import java.io.*;
-import javax.swing.JList;
 
 public class ClientUI extends JFrame{
 
@@ -200,15 +166,15 @@ public class ClientUI extends JFrame{
 		
 		JLabel label_3 = new JLabel("                        ");
 		panel_2.add(label_3);
-		//私聊功能
-		JButton btnPrivate = new JButton("私聊");
+
+		/*JButton btnPrivate = new JButton("私聊");
 		btnPrivate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				sendToOne();
 			}
 		});
 		btnPrivate.setFont(new Font("微软雅黑", Font.BOLD, 14));
-		panel_2.add(btnPrivate);
+		panel_2.add(btnPrivate);*/
 
 		
 		JPanel panel_3 = new JPanel();
@@ -286,6 +252,37 @@ public class ClientUI extends JFrame{
 				download();
 			}
 		});
+
+		//图片
+		JButton imagebtnUpload = new JButton("发送图片");
+		JButton imagebtnDownload = new JButton("查看图片");
+		panel_4.add(imagebtnUpload);
+		panel_4.add(imagebtnDownload);
+		imagebtnUpload.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				try {
+					imageupload();
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}//上传函数
+			}
+		});
+		imagebtnUpload.setFont(new Font("微软雅黑", Font.BOLD, 16));
+
+		imagebtnDownload.setFont(new Font("微软雅黑", Font.BOLD, 16));
+
+		imagebtnDownload.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				imagedownload();
+				ImageIcon img = new ImageIcon("D:\\imageTest\\Client\\download.png");
+				Image image = img.getImage(); // transform it
+				Image newimg = image.getScaledInstance(200, 200,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
+				img = new ImageIcon(newimg);
+				textShow.insertIcon(img);
+			}
+		});
+
 		JPanel user_panel = new JPanel();
 		user_panel.setBorder(new EtchedBorder(EtchedBorder.LOWERED, null, null));
 		contentPane.add(user_panel, BorderLayout.CENTER);
@@ -319,14 +316,46 @@ public class ClientUI extends JFrame{
         }
         	
 	}
+
+	//图片上传
+	public synchronized void imageupload() throws IOException
+	{
+		JFileChooser chooser = new JFileChooser();
+		FileNameExtensionFilter filter = new FileNameExtensionFilter(
+				".png",".jpg",".bmp");
+		chooser.setFileFilter(filter);
+		int returnVal = chooser.showOpenDialog(chooser);
+		if(returnVal == JFileChooser.APPROVE_OPTION)
+		{
+			//发送文件发送人的文件名
+			File file = chooser.getSelectedFile();
+			sendMessage(this.getTitle() + "@" + "imageUpload" + "@" + file.getName());
+			//传送文件
+			imageuploadThread imageuploadthread = new imageuploadThread(file);
+			imageuploadthread.start();
+		}
+
+	}
+
 	public synchronized void download()
 	{
 		//发送下载信息
-		sendMessage(this.getTitle() + "@" + "Download" + "@" + "null");
+		sendMessage(this.getTitle() + "@" + "imageDownload" + "@" + "null");
 		
 		DownLoadThread downloadthread = new DownLoadThread();
 		downloadthread.start();
 	}
+
+	//图片下载
+	public synchronized void imagedownload()
+	{
+		//发送下载信息
+		sendMessage(this.getTitle() + "@" + "imageDownload" + "@" + "null");
+
+		imageDownLoadThread imagedownloadthread = new imageDownLoadThread();
+		imagedownloadthread.start();
+	}
+
 	class DownLoadThread extends Thread{
 		public DownLoadThread()
 		{
@@ -359,6 +388,39 @@ public class ClientUI extends JFrame{
 
 		}
 	}
+
+	class imageDownLoadThread extends Thread{
+		public imageDownLoadThread()
+		{
+			super();
+		}
+		public void run()
+		{
+			try {
+				Socket imagedownloadsocket = new Socket(socket.getInetAddress(), 8000);
+
+				DataInputStream is = new DataInputStream(imagedownloadsocket.getInputStream());
+
+				String filename = "D:\\imageTest\\Client\\download.png";
+				FileOutputStream fos = new FileOutputStream(filename);
+				byte[] b = new byte[1024];
+				int length = 0;
+				while((length = is.read(b)) != -1)
+				{
+					fos.write(b, 0, length);
+				}
+				fos.flush();
+				fos.close();
+				is.close();
+				imagedownloadsocket.close();
+				sendMessage(ClientUI.this.getTitle() + "@" + "imageFinish" + "@" + "null");
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+	}
 	//发送信息
 	public synchronized void send(){
 		if(!isConnect){
@@ -370,11 +432,15 @@ public class ClientUI extends JFrame{
 			JOptionPane.showMessageDialog(this, "消息不能为空");
 			return;
 		}
-		sendMessage(this.getTitle() + "@" + "ALL" + "@" + message);
+		String name = comboBox.getSelectedItem().toString();
+		if(name.equals("所有人"))
+			sendMessage(this.getTitle() + "@" + "ALL" + "@" + message);
+		else
+			sendMessage(this.getTitle() + "@" + "ONE" + "@" + message + "@" + name);
 		textSend.setText(null);
 	}
 	//私聊发送
-	public synchronized void sendToOne() {
+	/*public synchronized void sendToOne() {
 		if(!isConnect){
 			JOptionPane.showMessageDialog(this, "还没有连接服务器，无法发送消息！");
 			return;
@@ -388,7 +454,7 @@ public class ClientUI extends JFrame{
 		sendMessage(this.getTitle() + "@" + "ONE" + "@" + message + "@" + name);
 		textSend.setText(null);
 	}
-
+*/
 	
 	//登录操作
 	public void login() {
@@ -538,6 +604,35 @@ public class ClientUI extends JFrame{
 					dos.flush();
 				}
 				filesocket.close();
+				fis.close();
+				dos.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	class imageuploadThread extends Thread{
+		private File file;
+		public imageuploadThread(File f){
+			super();
+			this.file = f;
+		}
+		public void run()
+		{
+			try {
+				Socket imageuploadsocket = new Socket(socket.getInetAddress(), 8200);
+				byte [] sendByte = new byte[1024];
+				int length = 0;
+				FileInputStream fis = new FileInputStream(file);
+
+				DataOutputStream dos = new DataOutputStream(imageuploadsocket.getOutputStream());
+				while((length = fis.read(sendByte)) > 0) {
+					dos.write(sendByte, 0, length);
+					dos.flush();
+				}
+				imageuploadsocket.close();
 				fis.close();
 				dos.close();
 			} catch (IOException e) {
