@@ -340,7 +340,7 @@ public class ClientUI extends JFrame{
 	public synchronized void download()
 	{
 		//发送下载信息
-		sendMessage(this.getTitle() + "@" + "imageDownload" + "@" + "null");
+		sendMessage(this.getTitle() + "@" + "Download" + "@" + "null");
 		
 		DownLoadThread downloadthread = new DownLoadThread();
 		downloadthread.start();
