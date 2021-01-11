@@ -85,6 +85,7 @@ public class PortConfig extends JFrame implements ActionListener{
 		panel_2.add(btnCancle);
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent e) {
 		
 		

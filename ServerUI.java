@@ -97,7 +97,9 @@ public class ServerUI extends JFrame{
 		});
 	}
 
-
+	/**
+	 * Create the frame.
+	 */
 	public ServerUI() {
 		setResizable(false);
 		setTitle("聊天室服务端");
@@ -413,56 +415,33 @@ public class ServerUI extends JFrame{
 			{
 				super();
 			}
-		}
-		public void run()
-		{
-			try {
-				ServerSocket serversocket = new ServerSocket(9997);
-				Socket socket = serversocket.accept();
-				
-				byte [] sendByte = new byte[1024];
-				int length = 0;
-				FileInputStream fis = new FileInputStream(file);
-				
-				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-				while((length = fis.read(sendByte)) > 0) {
-					dos.write(sendByte, 0, length);
-					dos.flush();
+			public void run()
+			{
+				try {
+					ServerSocket serversocket = new ServerSocket(9997);
+					Socket socket = serversocket.accept();
+					
+					byte [] sendByte = new byte[1024];
+					int length = 0;
+					FileInputStream fis = new FileInputStream(file);
+					
+					DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
+					while((length = fis.read(sendByte)) > 0) {
+						dos.write(sendByte, 0, length);
+						dos.flush();
+					}
+					serversocket.close();
+					fis.close();
+					dos.close();
+					socket.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-		}
-
-	class imageUpLoadThread extends Thread{
-		public imageUpLoadThread()
-		{
-			super();
-		}
-
-		public void run()
-		{
-			try {
-				ServerSocket serversocket = new ServerSocket(8200);
-				Socket socket = serversocket.accept();
-
-				byte [] sendByte = new byte[1024];
-				int length = 0;
-				FileInputStream fis = new FileInputStream(file);
-
-				DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-				while((length = fis.read(sendByte)) > 0) {
-					dos.write(sendByte, 0, length);
-					dos.flush();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
+				
 			}
 
 		}
-	}
 
 		class DownLoadThread extends Thread
 		{
@@ -499,44 +478,6 @@ public class ServerUI extends JFrame{
 				}
 			}
 		}
-
-	//图片下载线程
-	class imageDownLoadThread extends Thread
-	{
-		private String filename;
-		public imageDownLoadThread(String filename)
-		{
-			super();
-			this.filename = filename;
-		}
-		public void run()
-		{
-			try {
-				ServerSocket imagedownloadsocket = new ServerSocket(8000);
-
-				Socket imagesocket = imagedownloadsocket.accept();
-				DataInputStream is = new DataInputStream(imagesocket.getInputStream());
-
-				filename = "D:\\imageTest\\Server\\" + filename;
-
-				FileOutputStream fos = new FileOutputStream(filename);
-				byte[] b = new byte[1024];
-				int length = 0;
-				while((length = is.read(b)) != -1) {
-					fos.write(b, 0, length);
-				}
-				fos.flush();
-				fos.close();
-				is.close();
-				imagedownloadsocket.close();
-				ServerUI.this.file = new File(filename);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
-
 		class ClientThread extends Thread {
 			private Socket socket;
 			private BufferedReader read;
@@ -664,12 +605,12 @@ public class ServerUI extends JFrame{
 				}
 			}else if(owner.equals("Upload"))
 			{
-				message = name + "上传了文件：" + contant;
+				message = "@File@" + name + "@" + contant + "@";
 				//执行线程
 				DownLoadThread downthread = new DownLoadThread(contant);
 				downthread.start();
 				
-				textArea.setText(textArea.getText() +message + "\r\n");
+				textArea.setText(textArea.getText() + name + "上传了文件" + contant + "\r\n");
 				for (int i = client.size() - 1; i >= 0; i--) {
 					client.get(i).getWrite().println(message);  //获取用户的输出流并打印信息
 					client.get(i).getWrite().flush();	//清空缓存区
@@ -696,7 +637,6 @@ public class ServerUI extends JFrame{
 						client.get(i).getWrite().flush();
 					}
 				}
-				
 			}else if(owner.equals("Finish"))
 			{
 				message = name + "下载完成";
@@ -706,54 +646,6 @@ public class ServerUI extends JFrame{
 					client.get(i).getWrite().flush();
 				}
 			}
-
-			else if(owner.equals("Uploadimage"))
-			{
-				message = name + "上传了图片文件：" + contant;
-				//执行线程
-				imageDownLoadThread downthread = new imageDownLoadThread(contant);
-				downthread.start();
-
-				textArea.setText(textArea.getText() +message + "\r\n");
-				for (int i = client.size() - 1; i >= 0; i--) {
-					client.get(i).getWrite().println(message);  //获取用户的输出流并打印信息
-					client.get(i).getWrite().flush();	//清空缓存区
-				}
-			}
-			else if(owner.equals("Downloadimage"))
-			{
-				if(file == null) {
-					message = "还没有人上传过文件";
-					for(int i = client.size() - 1; i >= 0; i--) {
-						if(client.get(i).getUser().getName() .equals(name))
-						{
-							client.get(i).getWrite().println(message);  //获取用户的输出流并打印信息
-							client.get(i).getWrite().flush();
-							break;
-						}
-					}
-				}else {
-					imageUpLoadThread uploadthread = new imageUpLoadThread();
-					uploadthread.start();
-					message = name + "开始下载文件" + file.getName();
-					textArea.setText(textArea.getText() +message + "\r\n");
-					for(int i = client.size() - 1; i >= 0; i--) {
-						client.get(i).getWrite().println(message);
-						client.get(i).getWrite().flush();
-					}
-				}
-
-			}
-			else if(owner.equals("Finishimage"))
-			{
-				message = name + "下载完成";
-				textArea.setText(textArea.getText() +message + "\r\n");
-				for(int i = client.size() - 1; i >= 0; i--) {
-					client.get(i).getWrite().println(message);
-					client.get(i).getWrite().flush();
-				}
-			}
-
 	}
 
 }

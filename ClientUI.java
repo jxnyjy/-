@@ -1,19 +1,52 @@
 package server;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.EventQueue;
 
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.border.EmptyBorder;
+import javax.swing.JTextArea;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 
+import java.awt.FlowLayout;
+import javax.swing.JCheckBox;
+import javax.swing.JButton;
+import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
+import java.awt.GridBagLayout;
+import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.CardLayout;
+import java.awt.Font;
+import javax.swing.UIManager;
+import javax.swing.SwingConstants;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import java.awt.Window.Type;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
 
+import javax.swing.JToggleButton;
+import javax.swing.ListModel;
+
+import java.awt.GridLayout;
+import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.LineBorder;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
 
 import javax.swing.border.EtchedBorder;
+import javax.swing.JEditorPane;
+import javax.swing.JFileChooser;
 import javax.swing.border.SoftBevelBorder;
 import javax.swing.border.TitledBorder;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -26,6 +59,7 @@ import java.awt.event.ActionEvent;
 import java.net.Socket;
 import java.util.*;
 import java.io.*;
+import javax.swing.JList;
 
 public class ClientUI extends JFrame{
 
@@ -48,8 +82,7 @@ public class ClientUI extends JFrame{
 	private Map<String, User> onLineUser = new HashMap<String, User>(); // 所有在线的用户
 	//发送信息的线程
 	private MessageThread messageThread;
-
-
+	private String filename;
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -168,14 +201,14 @@ public class ClientUI extends JFrame{
 		JLabel label_3 = new JLabel("                        ");
 		panel_2.add(label_3);
 		//私聊功能
-		/*JButton btnPrivate = new JButton("私聊");
+		JButton btnPrivate = new JButton("私聊");
 		btnPrivate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				sendToOne();
 			}
 		});
 		btnPrivate.setFont(new Font("微软雅黑", Font.BOLD, 14));
-		panel_2.add(btnPrivate);*/
+		panel_2.add(btnPrivate);
 
 		
 		JPanel panel_3 = new JPanel();
@@ -220,8 +253,8 @@ public class ClientUI extends JFrame{
 		});
 		btnSend.setFont(new Font("微软雅黑", Font.BOLD, 16));
 		panel_3.add(btnSend);
-
-
+		
+		
 		
 		
 		JPanel panel_4 = new JPanel();
@@ -239,6 +272,7 @@ public class ClientUI extends JFrame{
 				try {
 					upload();
 				} catch (IOException e1) {
+					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}//上传函数
 			}
@@ -250,45 +284,6 @@ public class ClientUI extends JFrame{
 		btnDownload.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				download();
-			}
-		});
-
-		//图片上传和下载
-		JButton imagebtnUpload = new JButton("上传图片");
-		JButton imagebtnDownload = new JButton("下载图片");
-		JButton imagebtnShow = new JButton("查看图片");
-		panel_4.add(imagebtnShow);
-		panel_4.add(imagebtnUpload);
-		panel_4.add(imagebtnDownload);
-		imagebtnUpload.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				try {
-					imageupload();
-				} catch (IOException e1) {
-					// TODO Auto-generated catch block
-					e1.printStackTrace();
-				}//上传函数
-			}
-		});
-		imagebtnUpload.setFont(new Font("微软雅黑", Font.BOLD, 16));
-
-		imagebtnDownload.setFont(new Font("微软雅黑", Font.BOLD, 16));
-
-		imagebtnDownload.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				imagedownload();
-			}
-		});
-
-		imagebtnShow.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				ImageIcon img = new ImageIcon("D:\\imageTest\\Client\\download.png");
-				Image image = img.getImage(); // transform it
-				Image newimg = image.getScaledInstance(200, 200,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way
-				img = new ImageIcon(newimg);
-				textShow.insertIcon(img);
-
 			}
 		});
 		JPanel user_panel = new JPanel();
@@ -310,7 +305,7 @@ public class ClientUI extends JFrame{
 	{
 		JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        "doc","txt","docx");
+        ".doc",".txt",".docx");
         chooser.setFileFilter(filter);
         int returnVal = chooser.showOpenDialog(chooser);
         if(returnVal == JFileChooser.APPROVE_OPTION)
@@ -323,68 +318,6 @@ public class ClientUI extends JFrame{
 			filethread.start();
         }
         	
-	}
-
-	//发送图片
-	public synchronized void imageupload() throws IOException
-	{
-		JFileChooser chooser = new JFileChooser();
-		FileNameExtensionFilter filter = new FileNameExtensionFilter(
-				"jpg","bmp","png");
-		chooser.setFileFilter(filter);
-		int returnVal = chooser.showOpenDialog(chooser);
-		//sendMessage(this.getTitle() + "@" + "Uploadimage" + "@" + "1.png");
-		if(returnVal == JFileChooser.APPROVE_OPTION)
-		{
-			//发送文件发送人的文件名
-			File file = chooser.getSelectedFile();
-			sendMessage(this.getTitle() + "@" + "Uploadimage" + "@" + file.getName());
-			//传送文件
-			ImageThread filethread = new ImageThread(file);
-			filethread.start();
-		}
-	}
-	//下载图片
-	public synchronized void imagedownload()
-	{
-		//发送下载信息
-		sendMessage(this.getTitle() + "@" + "Downloadimage" + "@" + "null");
-
-		imageDownLoadThread downloadthread = new imageDownLoadThread();
-		downloadthread.start();
-	}
-	class imageDownLoadThread extends Thread{
-		public imageDownLoadThread()
-		{
-			super();
-		}
-		public void run()
-		{
-			try {
-				Socket downloadsocket = new Socket(socket.getInetAddress(), 8200);
-
-				DataInputStream is = new DataInputStream(downloadsocket.getInputStream());
-				OutputStream os = socket.getOutputStream();
-
-				String filename = "D:\\imageTest\\Client\\download.png";
-				FileOutputStream fos = new FileOutputStream(filename);
-				byte[] b = new byte[1024];
-				int length = 0;
-				while((length = is.read(b)) != -1)
-				{
-					fos.write(b, 0, length);
-				}
-				fos.flush();
-				fos.close();
-				is.close();
-				downloadsocket.close();
-				ClientUI.this.sendMessage(ClientUI.this.getTitle() + "@" + "Finishimage" + "@" + "null");
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-
-		}
 	}
 	public synchronized void download()
 	{
@@ -405,9 +338,8 @@ public class ClientUI extends JFrame{
 				Socket downloadsocket = new Socket(socket.getInetAddress(), 9997);
 
 				DataInputStream is = new DataInputStream(downloadsocket.getInputStream());
-				OutputStream os = socket.getOutputStream();
 				
-				String filename = "D:\\Test\\Client\\download.doc";
+				String filename = "D:\\Test\\Client\\" + ClientUI.this.filename;
 				FileOutputStream fos = new FileOutputStream(filename);
 				byte[] b = new byte[1024];
 				int length = 0;
@@ -419,7 +351,7 @@ public class ClientUI extends JFrame{
 				fos.close();
 				is.close();
 				downloadsocket.close();
-				ClientUI.this.sendMessage(ClientUI.this.getTitle() + "@" + "Finish" + "@" + "null");
+				sendMessage(ClientUI.this.getTitle() + "@" + "Finish" + "@" + "null");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -438,15 +370,11 @@ public class ClientUI extends JFrame{
 			JOptionPane.showMessageDialog(this, "消息不能为空");
 			return;
 		}
-		String name = comboBox.getSelectedItem().toString();
-		if(name.equals("所有人"))
-			sendMessage(this.getTitle() + "@" + "ALL" + "@" + message);
-		else
-			sendMessage(this.getTitle() + "@" + "ONE" + "@" + message + "@" + name);
+		sendMessage(this.getTitle() + "@" + "ALL" + "@" + message);
 		textSend.setText(null);
 	}
 	//私聊发送
-	/*public synchronized void sendToOne() {
+	public synchronized void sendToOne() {
 		if(!isConnect){
 			JOptionPane.showMessageDialog(this, "还没有连接服务器，无法发送消息！");
 			return;
@@ -459,7 +387,7 @@ public class ClientUI extends JFrame{
 		String name = comboBox.getSelectedItem().toString();
 		sendMessage(this.getTitle() + "@" + "ONE" + "@" + message + "@" + name);
 		textSend.setText(null);
-	}*/
+	}
 
 	
 	//登录操作
@@ -618,35 +546,6 @@ public class ClientUI extends JFrame{
 			}
 		}
 	}
-
-	class ImageThread extends Thread{
-		private File file;
-		public ImageThread(File f){
-			super();
-			this.file = f;
-		}
-		public void run()
-		{
-			try {
-				Socket filesocket = new Socket(socket.getInetAddress(), 8000);
-				byte [] sendByte = new byte[1024];
-				int length = 0;
-				FileInputStream fis = new FileInputStream(file);
-
-				DataOutputStream dos = new DataOutputStream(filesocket.getOutputStream());
-				while((length = fis.read(sendByte)) > 0) {
-					dos.write(sendByte, 0, length);
-					dos.flush();
-				}
-				filesocket.close();
-				fis.close();
-				dos.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
 	//发送信息的线程
 	class MessageThread extends Thread {
  
@@ -718,6 +617,12 @@ public class ClientUI extends JFrame{
 							comboBox.addItem(userName);
 							comboBox.revalidate();
 						}
+					} else if(command.equals("File"))
+					{
+						String name = st.nextToken();
+						filename = st.nextToken();
+						message = name + "上传了文件" + filename;
+						textShow.setText(textShow.getText() +message + "\r\n");
 					}
 //					else if(command.equals("ONE")){
 //						String msg = st.nextToken();
